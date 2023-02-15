@@ -73,8 +73,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
         String sql = "SELECT * FROM users";
 
-        try (Statement statement = connection.createStatement()) {
-            ResultSet res = statement.executeQuery(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            ResultSet res = statement.executeQuery();
 
             while (res.next()) {
                 int id = res.getInt(1);
@@ -94,8 +94,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
         String sql = "TRUNCATE TABLE users;";
 
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
