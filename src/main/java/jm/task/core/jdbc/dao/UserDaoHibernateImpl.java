@@ -10,82 +10,90 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     private String sql;
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = Util.getSessionFactory();;
 
     public UserDaoHibernateImpl() {
     }
 
     @Override
     public void createUsersTable() {
-        Session session = Util.getSessionFactory().openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        sql = "CREATE TABLE IF NOT EXISTS users " +
-                "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "name VARCHAR(255) NOT NULL, " +
-                "lastName VARCHAR(255) NOT NULL, " +
-                "age INT(3) NOT NULL)";
+            sql = "CREATE TABLE IF NOT EXISTS users " +
+                    "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                    "name VARCHAR(255) NOT NULL, " +
+                    "lastName VARCHAR(255) NOT NULL, " +
+                    "age INT(3) NOT NULL)";
 
-        session.beginTransaction();
-        session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
-        session.close();
+            session.beginTransaction();
+            session.createSQLQuery(sql).addEntity(User.class).executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void dropUsersTable() {
-        sessionFactory = Util.getSessionFactory();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        sql = "DROP TABLE IF EXISTS users";
+            sql = "DROP TABLE IF EXISTS users";
 
-        session.beginTransaction();
-        session.createSQLQuery(sql).executeUpdate();
-        session.close();
+            session.beginTransaction();
+            session.createSQLQuery(sql).executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        sessionFactory = Util.getSessionFactory();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        User user = new User(name, lastName, age);
+            User user = new User(name, lastName, age);
 
-        session.beginTransaction();
-        session.save(user);
-        session.close();
+            session.beginTransaction();
+            session.save(user);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-        sessionFactory = Util.getSessionFactory();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        sql = "DELETE FROM users WHERE id = " + id;
+            sql = "DELETE FROM users WHERE id = " + id;
 
-        session.beginTransaction();
-        session.createSQLQuery(sql).executeUpdate();
-        session.close();
+            session.beginTransaction();
+            session.createSQLQuery(sql).executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        sessionFactory = Util.getSessionFactory();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        sql = "SELECT e FROM User e";
+            sql = "SELECT e FROM User e";
 
-        Query query = session.createQuery(sql);
-        return query.getResultList();
+            Query query = session.createQuery(sql);
+            return query.getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void cleanUsersTable() {
-        sessionFactory = Util.getSessionFactory();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        sql = "TRUNCATE TABLE users";
+            sql = "TRUNCATE TABLE users";
 
-        session.beginTransaction();
-        session.createSQLQuery(sql).executeUpdate();
-        session.close();
+            session.beginTransaction();
+            session.createSQLQuery(sql).executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
